@@ -7,7 +7,7 @@ let width = 0
 let height = 0
 const margin_top = 50 // 距顶距离
 const margin_left = 50 // 距左距离
-const interval = 10 // 模块的间隔
+const interval = 2 // 模块的间隔
 
 /**
  * 计算单位
@@ -83,27 +83,36 @@ onMounted(() => {
   page.appendChild(app.view)
 
   // 循环创建菜单
+  let doms = []
   menus.forEach(e => {
     // 创建精灵并渲染
-    const graphics = new PIXI.Graphics()
-    graphics.beginFill(0x66ccff)
-    graphics.lineStyle(5, 0x011471, 0.5)
-    graphics.drawPolygon(e.loca)
-    graphics.endFill()
+    const dom = new PIXI.Graphics()
+    dom.beginFill(0x66ccff)
+    dom.lineStyle(5, 0x011471, 0.5)
+    dom.drawPolygon(e.loca)
+    dom.endFill()
     // 增加操作事件
-    graphics.interactive = true
-    graphics.buttonMode = true
-    graphics.on('mouseover', () => {
-      console.log('鼠标移入', e.id)
-      graphics.alpha = 0.5
-    })
-    graphics.on('mouseout', () => {
-      console.log('鼠标移入', e.id)
-      graphics.alpha = 1
-    })
+    dom.interactive = true
+    dom.buttonMode = true
+    // 鼠标移入
+    dom.on('mouseover', () => mouseover(e.id))
+    // 鼠标移出
+    dom.on('mouseout', () => mouseout())
+    // 添加至元素集合
+    doms.push({ id: e.id, dom })
     // 精灵添加至画布
-    app.stage.addChild(graphics)
+    app.stage.addChild(dom)
   })
+  // 鼠标移入事件
+  const mouseover = id => {
+    doms.forEach(e => {
+      if (e.id === id) e.dom.alpha = 1
+      else e.dom.alpha = 0.5
+    })
+  }
+  const mouseout = () => {
+    doms.forEach(e => (e.dom.alpha = 1))
+  }
 })
 </script>
 
